@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chọn Phương Pháp Học | Vocabulary Manager</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --secondary-color: #818cf8;
+        --background: #eef2ff;
+        --light-blue: #e0e7ff;
+        --success: #22c55e;
+        --border-color: #c7d2fe;
+        --text-primary: #1e293b;
+        --text-secondary: #4b5563;
+        --card-bg: rgba(255, 255, 255, 0.9);
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background-color: var(--background);
+        background-image: linear-gradient(120deg, #e0e7ff 0%, #eef2ff 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .header {
+        display: flex;
+        justify-content: flex-start; /* Align button to the left */
+        align-items: center;
+        margin-bottom: 2rem; /* Reduced from 3rem for mobile */
+      }
+
+      .back-button {
+        padding: 0.75rem;
+        background: var(--light-blue);
+        color: var(--primary-color);
+        border: none;
+        border-radius: 50%; /* Circular button */
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+      }
+
+      .back-button:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+      }
+
+      .study-option {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+      }
+
+      .study-option:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .option-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .option-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+      }
+
+      .option-description {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      .folder-info {
+        background: var(--card-bg);
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+      }
+
+      .folder-info h2 {
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .folder-stats {
+        display: flex;
+        gap: 2rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        .header {
+          margin-bottom: 1.5rem;
+        }
+
+        .options-grid {
+          grid-template-columns: 1fr; /* Single column on mobile */
+          gap: 1.5rem;
+        }
+
+        .study-option {
+          padding: 1.5rem;
+        }
+
+        .option-icon {
+          font-size: 2.5rem;
+        }
+
+        .option-title {
+          font-size: 1.1rem;
+        }
+
+        .option-description {
+          font-size: 0.8rem;
+        }
+
+        .folder-info {
+          padding: 1rem;
+        }
+
+        .folder-info h2 {
+          font-size: 1.25rem;
+        }
+
+        .folder-stats {
+          flex-direction: column; /* Stack stats vertically */
+          gap: 0.5rem;
+          font-size: 0.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a href="vocabulary.html" class="back-button">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+      </div>
+
+      <div class="folder-info">
+        <h2 id="folderName">Loading...</h2>
+        <div class="folder-stats">
+          <span id="wordCount">Số từ: ...</span>
+          <span id="lastReviewed">Lần ôn tập cuối: ...</span>
+        </div>
+      </div>
+
+      <div class="options-grid">
+        <div class="study-option" onclick="navigateToStudy('flashcards')">
+          <div class="option-icon">🎴</div>
+          <h3 class="option-title">Flashcards</h3>
+          <p class="option-description">
+            Học với thẻ ghi nhớ. Xem từ vựng và nghĩa, kèm hình ảnh và âm thanh.
+          </p>
+        </div>
+
+        <div class="study-option" onclick="navigateToStudy('quiz')">
+          <div class="option-icon">📝</div>
+          <h3 class="option-title">Trắc nghiệm</h3>
+          <p class="option-description">
+            Kiểm tra kiến thức với các câu hỏi trắc nghiệm về từ vựng.
+          </p>
+        </div>
+
+        <div class="study-option" onclick="navigateToStudy('matching')">
+          <div class="option-icon">🔄</div>
+          <h3 class="option-title">Ghép cặp</h3>
+          <p class="option-description">
+            Ghép các từ vựng với nghĩa tương ứng của chúng.
+          </p>
+        </div>
+
+        <div class="study-option" onclick="navigateToStudy('writing')">
+          <div class="option-icon">✍️</div>
+          <h3 class="option-title">Luyện viết</h3>
+          <p class="option-description">
+            Thực hành viết các từ vựng dựa trên nghĩa cho trước.
+          </p>
+        </div>
+
+        <div class="study-option" onclick="navigateToStudy('listening')">
+          <div class="option-icon">🎧</div>
+          <h3 class="option-title">Luyện nghe</h3>
+          <p class="option-description">
+            Nghe phát âm và chọn từ vựng chính xác.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentFolderId = null;
+
+      window.addEventListener("load", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentFolderId = urlParams.get("id");
+
+        if (!currentFolderId) {
+          alert("Không tìm thấy thông tin thư mục!");
+          window.location.href = "index.html";
+          return;
+        }
+
+        // Kiểm tra xem thư mục có từ vựng không
+        const hasFlashcards = localStorage.getItem(
+          `flashcards_${currentFolderId}`
+        );
+        if (!hasFlashcards) {
+          alert("Vui lòng nhập từ vựng trước khi học!");
+          window.location.href = `vocabulary-input.html?id=${currentFolderId}`;
+          return;
+        }
+
+        loadFolderInfo();
+      });
+
+      function loadFolderInfo() {
+        // Lấy thông tin folder từ localStorage
+        const folders = JSON.parse(localStorage.getItem("vocabularyFolders"));
+        let folder = null;
+
+        // Tìm folder trong tất cả các ngày
+        for (let i = 1; i <= 7; i++) {
+          const foundFolder = folders[`day${i}`].find(
+            (f) => f.id === parseInt(currentFolderId)
+          );
+          if (foundFolder) {
+            folder = foundFolder;
+            break;
+          }
+        }
+
+        if (folder) {
+          document.getElementById("folderName").textContent = folder.name;
+          document.getElementById("wordCount").textContent = `Số từ: ${
+            folder.wordCount || 0
+          }`;
+          document.getElementById(
+            "lastReviewed"
+          ).textContent = `Lần ôn tập cuối: ${
+            folder.lastReviewed || "Chưa ôn tập"
+          }`;
+        }
+      }
+
+      function navigateToStudy(mode) {
+        const pages = {
+          flashcards: "flashcards.html",
+          quiz: "quiz.html",
+          matching: "word-puzzle.html",
+          writing: "sentence-builder.html",
+          listening: "listening.html",
+        };
+
+        const page = pages[mode];
+        if (page) {
+          window.location.href = `${page}?id=${currentFolderId}&mode=${mode}`;
+        }
+      }
+    </script>
+  </body>
+</html>

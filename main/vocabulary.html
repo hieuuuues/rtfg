@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vocabulary Manager</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --secondary-color: #6b7280;
+        --background: #f0f4ff;
+        --light-blue: #dbeafe;
+        --success: #10b981;
+        --border-color: #bfdbfe;
+        --text-primary: #1e293b;
+        --text-secondary: #6b7280;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, var(--background), #e0e7ff);
+        color: var(--text-primary);
+        min-height: 100vh;
+        padding-top: 60px;
+        line-height: 1.6;
+      }
+
+      .fixed-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border-color);
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 20;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .back-arrow {
+        width: 36px;
+        height: 36px;
+        background: var(--light-blue);
+        color: var(--primary-color);
+        border-radius: 50%;
+        text-decoration: none;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .back-arrow:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: scale(1.05);
+      }
+
+      .header-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .hamburger {
+        display: none;
+        font-size: 1.5rem;
+        background: none;
+        border: none;
+        color: var(--primary-color);
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      .app-container {
+        display: flex;
+        min-height: calc(100vh - 60px);
+      }
+
+      .sidebar {
+        width: 280px;
+        background: linear-gradient(
+          180deg,
+          var(--card-bg),
+          rgba(255, 255, 255, 0.85)
+        );
+        backdrop-filter: blur(12px);
+        border-right: 1px solid var(--border-color);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        height: calc(100vh - 60px);
+        top: 60px;
+        z-index: 10;
+        transition: transform 0.3s ease;
+      }
+
+      .logo-section {
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .logo-section h1 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .days-nav {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        overflow-y: auto;
+      }
+
+      .day-item {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+      }
+
+      .day-item:hover {
+        background: var(--light-blue);
+        color: var(--text-primary);
+      }
+
+      .day-item.active {
+        background: var(--primary-color);
+        color: white;
+        font-weight: 600;
+      }
+
+      .day-item .count {
+        margin-left: auto;
+        background: rgba(255, 255, 255, 0.25);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.875rem;
+      }
+
+      .main-content {
+        margin-left: 280px;
+        flex-grow: 1;
+        padding: 1.5rem;
+      }
+
+      .content-header {
+        margin-bottom: 1.5rem;
+      }
+
+      .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .content-header h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .create-form {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 1rem;
+        background: white;
+        transition: all 0.3s ease;
+      }
+
+      .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .btn-secondary {
+        background: var(--light-blue);
+        color: var(--primary-color);
+      }
+
+      .btn-primary:hover {
+        background: #3b3bff;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .folder-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .folder-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .folder-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .folder-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      .folder-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .folder-day {
+        background: var(--light-blue);
+        color: var(--primary-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.875rem;
+      }
+
+      .folder-description {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+      }
+
+      .folder-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .stats-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.875rem;
+      }
+
+      .folder-meta {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+
+      .folder-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+        gap: 0.5rem;
+      }
+
+      .progress-container {
+        margin-top: 0.5rem;
+        background: var(--border-color);
+        border-radius: 999px;
+        height: 6px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary-color), #60a5fa);
+        border-radius: 999px;
+        transition: width 0.4s ease;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: 12px;
+        color: var(--text-secondary);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 100;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(2px);
+      }
+
+      .modal-content {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        margin: 15% auto;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-md);
+        width: 90%;
+        max-width: 400px;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      .close {
+        color: var(--text-secondary);
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      .close:hover {
+        color: var(--primary-color);
+      }
+
+      .word-list {
+        max-height: 250px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+      }
+
+      .word-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .word-item:last-child {
+        border-bottom: none;
+      }
+
+      .word-term {
+        font-weight: 500;
+      }
+
+      .word-definition {
+        color: var(--text-secondary);
+        text-align: right;
+        max-width: 60%;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding-top: 50px;
+        }
+
+        .fixed-header {
+          height: 50px;
+          padding: 0.5rem 1rem;
+        }
+
+        .back-arrow {
+          width: 32px;
+          height: 32px;
+          font-size: 1rem;
+        }
+
+        .header-title {
+          font-size: 1.1rem;
+        }
+
+        .hamburger {
+          display: block;
+        }
+
+        .app-container {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          height: 100vh;
+          position: fixed;
+          top: 50px;
+          left: 0;
+          transform: translateX(-100%);
+          z-index: 30;
+          padding: 1rem;
+        }
+
+        .sidebar.active {
+          transform: translateX(0);
+        }
+
+        .days-nav {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .day-item {
+          padding: 0.75rem;
+          font-size: 0.95rem;
+        }
+
+        .main-content {
+          margin-left: 0;
+          padding: 1rem;
+        }
+
+        .header-actions {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: stretch;
+        }
+
+        .content-header h2 {
+          font-size: 1.25rem;
+        }
+
+        .folder-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .folder-card {
+          padding: 1rem;
+        }
+
+        .folder-title {
+          font-size: 1rem;
+        }
+
+        .folder-day {
+          padding: 0.2rem 0.5rem;
+          font-size: 0.75rem;
+        }
+
+        .folder-description {
+          font-size: 0.8rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header-title {
+          font-size: 1rem;
+        }
+
+        .create-form,
+        .folder-card {
+          padding: 1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+          padding: 0.65rem;
+          font-size: 0.9rem;
+        }
+
+        .btn {
+          padding: 0.65rem 1rem;
+          font-size: 0.9rem;
+        }
+
+        .modal-content {
+          width: 95%;
+          padding: 1rem;
+        }
+
+        .modal-title {
+          font-size: 1.1rem;
+        }
+
+        .close {
+          font-size: 1.25rem;
+        }
+      }
+
+      .notification {
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        background: var(--success);
+        color: white;
+        border-radius: 8px;
+        box-shadow: var(--shadow-md);
+        z-index: 1000;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+
+      .notification.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .theme-toggle {
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+      }
+
+      .theme-toggle input {
+        width: 40px;
+        height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="fixed-header">
+      <div class="header-left">
+        <a href="../reading.html" class="back-arrow">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        <h1 class="header-title"></h1>
+      </div>
+      <button class="hamburger" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </header>
+
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="logo-section">
+          <h1></h1>
+        </div>
+        <nav class="days-nav">
+          <div class="day-item active" onclick="showDay(1)">
+            <span>📅 Day 1</span>
+            <span class="count" id="count-1">0</span>
+          </div>
+          <div class="day-item" onclick="showDay(2)">
+            <span>📅 Day 2</span>
+            <span class="count" id="count-2">0</span>
+          </div>
+          <div class="day-item" onclick="showDay(3)">
+            <span>📅 Day 3</span>
+            <span class="count" id="count-3">0</span>
+          </div>
+          <div class="day-item" onclick="showDay(4)">
+            <span>📅 Day 4</span>
+            <span class="count" id="count-4">0</span>
+          </div>
+          <div class="day-item" onclick="showDay(5)">
+            <span>📅 Day 5</span>
+            <span class="count" id="count-5">0</span>
+          </div>
+          <div class="day-item" onclick="showDay(6)">
+            <span>📅 Day 6</span>
+            <span class="count" id="count-6">0</span>
+          </div>
+          <div class="day-item" onclick="showDay(7)">
+            <span>📅 Day 7</span>
+            <span class="count" id="count-7">0</span>
+          </div>
+        </nav>
+        <button
+          class="btn btn-secondary"
+          onclick="generateCopyCode()"
+          style="margin-top: 1rem"
+        >
+          Sao chép mã dữ liệu
+        </button>
+        <button
+          class="btn btn-secondary"
+          onclick="showPasteModal()"
+          style="margin-top: 0.5rem"
+        >
+          Nhập mã dữ liệu
+        </button>
+        <div class="theme-toggle">
+          <span>Light</span>
+          <input type="checkbox" id="themeToggle" />
+          <span>Dark</span>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <div class="content-header">
+          <div class="header-actions">
+            <h2 id="currentDayTitle">Day 1</h2>
+            <button class="btn btn-primary" onclick="toggleCreateForm()">
+              + Create New Folder
+            </button>
+          </div>
+
+          <div class="create-form" id="createForm" style="display: none">
+            <div class="form-group">
+              <label for="folderName">Folder Name</label>
+              <input
+                type="text"
+                id="folderName"
+                placeholder="Enter your folder name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea
+                id="description"
+                placeholder="Brief description about the folder"
+              ></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="createFolder()">
+              Create Folder
+            </button>
+          </div>
+        </div>
+
+        <div id="folderContainer" class="folder-grid"></div>
+      </main>
+    </div>
+
+    <div id="wordModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalTitle">Folder Words</h3>
+          <span class="close" onclick="closeModal()">×</span>
+        </div>
+        <div class="word-list" id="wordList"></div>
+        <div class="form-group">
+          <label for="newWord">New Word</label>
+          <input type="text" id="newWord" placeholder="Enter a new word" />
+        </div>
+        <div class="form-group">
+          <label for="newDefinition">Definition</label>
+          <input
+            type="text"
+            id="newDefinition"
+            placeholder="Enter the definition"
+          />
+        </div>
+        <button class="btn btn-primary" onclick="addWord()">Add Word</button>
+      </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+      const LZString = {
+        compressToBase64: function (str) {
+          return btoa(unescape(encodeURIComponent(str)));
+        },
+        decompressFromBase64: function (str) {
+          return decodeURIComponent(escape(atob(str)));
+        },
+      };
+
+      let folders = {
+        day1: [],
+        day2: [],
+        day3: [],
+        day4: [],
+        day5: [],
+        day6: [],
+        day7: [],
+      };
+      let userCode = localStorage.getItem("userCode") || "hieuuuues"; // Khởi tạo userCode
+      const MOVE_INTERVAL = 60000; // 1 phút
+      let currentDay = 1;
+      let timeoutIds = {};
+
+      function formatDateTime(date) {
+        return date.toISOString().slice(0, 19).replace("T", " ");
+      }
+
+      function getCurrentDateTime() {
+        return formatDateTime(new Date());
+      }
+
+      function getCurrentUser() {
+        return "hieuuuues";
+      }
+
+      function checkLocalStorage() {
+        try {
+          localStorage.setItem("test", "test");
+          localStorage.removeItem("test");
+          return true;
+        } catch (e) {
+          console.error("localStorage không hoạt động:", e);
+          return false;
+        }
+      }
+
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("active");
+      }
+
+      const themeToggle = document.getElementById("themeToggle");
+      themeToggle.addEventListener("change", () => {
+        if (themeToggle.checked) {
+          document.documentElement.style.setProperty("--background", "#1a1a2e");
+          document.documentElement.style.setProperty(
+            "--text-primary",
+            "#e6e6e6"
+          );
+          document.documentElement.style.setProperty(
+            "--text-secondary",
+            "#b0b0b0"
+          );
+          document.documentElement.style.setProperty(
+            "--card-bg",
+            "rgba(30, 30, 50, 0.9)"
+          );
+          document.documentElement.style.setProperty(
+            "--border-color",
+            "#3a3a5c"
+          );
+          document.documentElement.style.setProperty("--light-blue", "#2d2d42");
+          localStorage.setItem("theme", "dark");
+        } else {
+          document.documentElement.style.setProperty("--background", "#f0f4ff");
+          document.documentElement.style.setProperty(
+            "--text-primary",
+            "#1e293b"
+          );
+          document.documentElement.style.setProperty(
+            "--text-secondary",
+            "#6b7280"
+          );
+          document.documentElement.style.setProperty(
+            "--card-bg",
+            "rgba(255, 255, 255, 0.95)"
+          );
+          document.documentElement.style.setProperty(
+            "--border-color",
+            "#bfdbfe"
+          );
+          document.documentElement.style.setProperty("--light-blue", "#dbeafe");
+          localStorage.setItem("theme", "light");
+        }
+      });
+
+      function checkAndUpdateFolders() {
+        for (let i = 1; i <= 7; i++) {
+          const dayFolders = folders[`day${i}`];
+          dayFolders.forEach((folder) => {
+            if (folder.currentDay < 7) {
+              const now = new Date();
+              const lastMoved = new Date(folder.lastMoved || folder.createdAt);
+              const timeDiff = now - lastMoved;
+              const daysToMove = Math.floor(timeDiff / MOVE_INTERVAL);
+
+              if (daysToMove > 0) {
+                folders[`day${folder.currentDay}`] = folders[
+                  `day${folder.currentDay}`
+                ].filter((f) => f.id !== folder.id);
+                folder.currentDay = Math.min(folder.currentDay + daysToMove, 7);
+                folder.lastMoved = now.toISOString();
+                folders[`day${folder.currentDay}`].push(folder);
+              }
+              if (folder.currentDay < 7) startFolderTimer(folder);
+            }
+          });
+        }
+        saveData();
+        updateFolderDisplay();
+      }
+
+      function loadData() {
+        if (!checkLocalStorage()) {
+          showNotification("localStorage không khả dụng.", "error");
+          return;
+        }
+        userCode = localStorage.getItem("userCode") || getCurrentUser();
+        const savedFolders = localStorage.getItem("vocabularyFolders");
+        if (savedFolders) {
+          folders = JSON.parse(savedFolders);
+          checkAndUpdateFolders();
+          updateAllCounts();
+          updateFolderDisplay();
+        }
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+          themeToggle.checked = true;
+          themeToggle.dispatchEvent(new Event("change"));
+        }
+      }
+
+      function saveData() {
+        if (checkLocalStorage()) {
+          localStorage.setItem("vocabularyFolders", JSON.stringify(folders));
+          localStorage.setItem("userCode", userCode);
+          updateAllCounts();
+        }
+      }
+
+      function toggleCreateForm() {
+        const form = document.getElementById("createForm");
+        form.style.display = form.style.display === "none" ? "block" : "none";
+      }
+
+      function createFolder() {
+        const name = document.getElementById("folderName").value.trim();
+        const description = document.getElementById("description").value.trim();
+        if (!name) {
+          showNotification("Vui lòng nhập tên thư mục!", "warning");
+          return;
+        }
+
+        const folder = {
+          name,
+          description: description || "No description",
+          currentDay: 1,
+          id: Date.now(),
+          creator: getCurrentUser(),
+          wordCount: 0,
+          createdAt: new Date().toISOString(),
+          lastMoved: new Date().toISOString(),
+          words: [],
+        };
+
+        folders.day1.push(folder);
+        saveData();
+        updateFolderDisplay();
+
+        document.getElementById("folderName").value = "";
+        document.getElementById("description").value = "";
+        toggleCreateForm();
+
+        showNotification("Đã tạo thư mục thành công!", "success");
+        startFolderTimer(folder);
+
+        if (currentDay === 1) updateFolderDisplay();
+      }
+
+      function startFolderTimer(folder) {
+        if (timeoutIds[folder.id]) clearTimeout(timeoutIds[folder.id]);
+        const createdTime = new Date(
+          folder.lastMoved || folder.createdAt
+        ).getTime();
+        const currentTime = new Date().getTime();
+        const timePassed = currentTime - createdTime;
+        const timeLeft = MOVE_INTERVAL - (timePassed % MOVE_INTERVAL);
+
+        timeoutIds[folder.id] = setTimeout(() => moveFolder(folder), timeLeft);
+      }
+
+      function moveFolder(folder) {
+        if (folder.currentDay < 7) {
+          folders[`day${folder.currentDay}`] = folders[
+            `day${folder.currentDay}`
+          ].filter((f) => f.id !== folder.id);
+          folder.currentDay++;
+          folder.lastMoved = new Date().toISOString();
+          folders[`day${folder.currentDay}`].push(folder);
+          saveData();
+          updateFolderDisplay();
+          showNotification(
+            `Thư mục "${folder.name}" đã chuyển sang Day ${folder.currentDay}`,
+            "success"
+          );
+          if (folder.currentDay < 7) startFolderTimer(folder);
+        }
+      }
+
+      function moveToNextDay(id) {
+        for (let i = 1; i <= 7; i++) {
+          const dayKey = `day${i}`;
+          const folderIndex = folders[dayKey].findIndex((f) => f.id === id);
+          if (folderIndex !== -1 && i < 7) {
+            const folder = folders[dayKey][folderIndex];
+            folders[dayKey].splice(folderIndex, 1);
+            folder.currentDay++;
+            folder.lastMoved = new Date().toISOString();
+            folders[`day${folder.currentDay}`].push(folder);
+            saveData();
+            updateFolderDisplay();
+            showNotification(
+              `Đã chuyển thư mục sang Day ${folder.currentDay}`,
+              "success"
+            );
+            startFolderTimer(folder);
+            break;
+          }
+        }
+      }
+
+      function deleteFolder(id) {
+        if (confirm("Bạn có chắc muốn xóa thư mục này?")) {
+          localStorage.removeItem(`flashcards_${id}`);
+          for (let i = 1; i <= 7; i++) {
+            const dayKey = `day${i}`;
+            folders[dayKey] = folders[dayKey].filter((f) => f.id !== id);
+          }
+          saveData();
+          updateFolderDisplay();
+          showNotification("Đã xóa thư mục thành công!", "success");
+        }
+      }
+
+      function updateAllCounts() {
+        for (let i = 1; i <= 7; i++) {
+          document.getElementById(`count-${i}`).textContent =
+            folders[`day${i}`].length;
+        }
+      }
+
+      function showDay(day) {
+        currentDay = day;
+        document.getElementById("currentDayTitle").textContent = `Day ${day}`;
+        const dayItems = document.querySelectorAll(".day-item");
+        dayItems.forEach((item) => item.classList.remove("active"));
+        dayItems[day - 1].classList.add("active");
+
+        if (window.innerWidth <= 768) {
+          document.querySelector(".sidebar").classList.remove("active");
+        }
+        updateFolderDisplay();
+      }
+
+      function updateFolderDisplay() {
+        const container = document.getElementById("folderContainer");
+        const currentFolders = folders[`day${currentDay}`];
+
+        if (!currentFolders || currentFolders.length === 0) {
+          container.innerHTML =
+            '<div class="empty-state"><h3>No Folders</h3><p>Create a new folder to get started.</p></div>';
+          return;
+        }
+
+        container.innerHTML = currentFolders
+          .map((folder) => {
+            const hasFlashcards = localStorage.getItem(
+              `flashcards_${folder.id}`
+            );
+            const nextMoveTime = new Date(folder.lastMoved);
+            nextMoveTime.setTime(nextMoveTime.getTime() + MOVE_INTERVAL);
+
+            return `
+              <div class="folder-card">
+                <div class="folder-header">
+                  <h3 class="folder-title">${folder.name}</h3>
+                  <span class="folder-day">Day ${folder.currentDay}</span>
+                </div>
+                <p class="folder-description">${folder.description}</p>
+                <div class="folder-stats">
+                  <div class="stats-item">
+                    <span>📚 Số từ:</span>
+                    <span>${folder.wordCount || 0}</span>
+                  </div>
+                  <div class="stats-item">
+                    <span>⏱️ Chuyển tiếp theo:</span>
+                    <span>${
+                      folder.currentDay < 7
+                        ? nextMoveTime.toLocaleString()
+                        : "Hoàn thành"
+                    }</span>
+                  </div>
+                </div>
+                <div class="folder-actions">
+                  ${
+                    hasFlashcards
+                      ? `<button class="btn btn-secondary" onclick="window.location.href='study-options.html?id=${folder.id}'">Học</button>`
+                      : `<button class="btn btn-secondary" onclick="window.location.href='vocabulary-input.html?id=${folder.id}'">Nhập từ vựng</button>`
+                  }
+                </div>
+                <div class="folder-meta">
+                  <span>Tạo lúc: ${new Date(
+                    folder.createdAt
+                  ).toLocaleString()}</span>
+                  <span>Bởi: ${folder.creator}</span>
+                </div>
+                <div class="progress-container">
+                  <div class="progress-bar" style="width: ${
+                    (folder.currentDay / 7) * 100
+                  }%"></div>
+                </div>
+                <div class="folder-actions">
+                  ${
+                    folder.currentDay < 7
+                      ? `<button class="btn btn-secondary" onclick="moveToNextDay(${folder.id})">Chuyển ngày</button>`
+                      : `<span style="color: var(--success)">✓ Hoàn thành</span>`
+                  }
+                  <button class="btn btn-secondary" style="color: #e11d48;" onclick="deleteFolder(${
+                    folder.id
+                  })">Xóa</button>
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+
+        updateAllCounts();
+      }
+
+      function showNotification(message, type = "info") {
+        const notification = document.getElementById("notification");
+        notification.textContent = message;
+        notification.style.backgroundColor =
+          type === "success"
+            ? "#22c55e"
+            : type === "error"
+            ? "#ef4444"
+            : type === "warning"
+            ? "#f59e0b"
+            : "#3b82f6";
+        notification.classList.add("show");
+        setTimeout(() => notification.classList.remove("show"), 3000);
+      }
+
+      function generateCopyCode() {
+        const dataToExport = {
+          userCode: userCode,
+          folders: folders,
+          theme: localStorage.getItem("theme") || "light",
+        };
+
+        try {
+          const jsonString = JSON.stringify(dataToExport);
+          const compressed = LZString.compressToBase64(jsonString);
+          showCopyModal(compressed);
+        } catch (error) {
+          showNotification("Lỗi khi tạo mã dữ liệu: " + error.message, "error");
+        }
+      }
+
+      function showCopyModal(code) {
+        const modal = document.createElement("div");
+        modal.className = "modal";
+        modal.innerHTML = `
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h3 class="modal-title">Sao chép mã dữ liệu</h3>
+                  <span class="close" onclick="this.parentElement.parentElement.parentElement.remove()">×</span>
+              </div>
+              <div class="form-group">
+                  <label>Mã của bạn (nhấn để sao chép):</label>
+                  <input type="text" id="copyCode" value="${code}" readonly style="cursor: pointer;" onclick="copyToClipboard(this)">
+              </div>
+              <p style="font-size: 0.9rem; color: var(--text-secondary);">Sao chép mã này và lưu lại để sử dụng trên thiết bị khác.</p>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        modal.style.display = "block";
+      }
+
+      function copyToClipboard(element) {
+        element.select();
+        document.execCommand("copy");
+        showNotification("Đã sao chép mã vào clipboard!", "success");
+      }
+
+      function showPasteModal() {
+        const modal = document.createElement("div");
+        modal.className = "modal";
+        modal.innerHTML = `
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h3 class="modal-title">Nhập mã dữ liệu</h3>
+                  <span class="close" onclick="this.parentElement.parentElement.parentElement.remove()">×</span>
+              </div>
+              <div class="form-group">
+                  <label for="pasteCode">Dán mã dữ liệu:</label>
+                  <input type="text" id="pasteCode" placeholder="Dán mã bạn đã sao chép">
+              </div>
+              <button class="btn btn-primary" onclick="handlePaste()">Nhập</button>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        modal.style.display = "block";
+      }
+
+      function handlePaste() {
+        const code = document.getElementById("pasteCode").value.trim();
+        if (!code) {
+          showNotification("Vui lòng dán mã dữ liệu!", "warning");
+          return;
+        }
+
+        try {
+          const decompressed = LZString.decompressFromBase64(code);
+          const importedData = JSON.parse(decompressed);
+
+          if (!importedData.userCode || !importedData.folders) {
+            throw new Error("Mã không hợp lệ!");
+          }
+
+          userCode = importedData.userCode;
+          folders = importedData.folders;
+          localStorage.setItem("userCode", userCode);
+          localStorage.setItem("vocabularyFolders", JSON.stringify(folders));
+
+          const themeToggle = document.getElementById("themeToggle");
+          if (importedData.theme === "dark") {
+            themeToggle.checked = true;
+          } else {
+            themeToggle.checked = false;
+          }
+          themeToggle.dispatchEvent(new Event("change"));
+
+          checkAndUpdateFolders();
+          updateFolderDisplay();
+          showNotification("Đã nhập dữ liệu thành công!", "success");
+          document.querySelector(".modal").remove();
+        } catch (error) {
+          showNotification(
+            "Mã không hợp lệ hoặc lỗi khi nhập: " + error.message,
+            "error"
+          );
+        }
+      }
+
+      window.addEventListener("load", () => {
+        loadData();
+        showDay(1);
+        showNotification(`Chào mừng, ${getCurrentUser()}!`, "success");
+      });
+
+      document.addEventListener("click", (e) => {
+        const sidebar = document.querySelector(".sidebar");
+        const hamburger = document.querySelector(".hamburger");
+        if (
+          !sidebar.contains(e.target) &&
+          !hamburger.contains(e.target) &&
+          sidebar.classList.contains("active")
+        ) {
+          sidebar.classList.remove("active");
+        }
+      });
+    </script>
+  </body>
+</html>
